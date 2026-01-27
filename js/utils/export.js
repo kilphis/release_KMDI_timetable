@@ -44,11 +44,16 @@ export async function exportToImage() {
 }
 
 export async function generateWallpaper(allLectures, timetableData) {
-    if (!wallpaperExportRoot) return;
+    const { exportModal, exportImage } = elements;
+    const wallpaperExportRoot = document.getElementById('wallpaper-export-root');
 
     document.body.style.cursor = 'wait';
 
     try {
+        if (!wallpaperExportRoot) {
+            throw new Error('Export root (#wallpaper-export-root) not found');
+        }
+
         const planName = timetableData.currentPlan;
         const currentSelectedIds = timetableData.plans[planName];
 
@@ -58,6 +63,7 @@ export async function generateWallpaper(allLectures, timetableData) {
 
         // Populate Table
         const table = document.getElementById('wallpaper-table');
+        if (!table) throw new Error('Wallpaper table not found');
         table.innerHTML = '';
 
         const days = 5; // Mon-Fri
@@ -98,6 +104,9 @@ export async function generateWallpaper(allLectures, timetableData) {
         // Capture
         window.scrollTo(0, 0); // Prevent offset issues
 
+        // Wait a bit for DOM to settle
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         // Temporarily remove overflow-hidden and truncate classes for capture
         const hiddenElements = wallpaperExportRoot.querySelectorAll('.overflow-hidden, .truncate');
         const originalClasses = new Map();
@@ -114,6 +123,16 @@ export async function generateWallpaper(allLectures, timetableData) {
             backgroundColor: null,
             width: 360,
             height: 640,
+            onclone: (clonedDoc) => {
+                const clonedRoot = clonedDoc.getElementById('wallpaper-export-root');
+                if (clonedRoot) {
+                    clonedRoot.style.position = 'relative';
+                    clonedRoot.style.top = '0';
+                    clonedRoot.style.left = '0';
+                    clonedRoot.style.opacity = '1';
+                    clonedRoot.style.pointerEvents = 'auto';
+                }
+            }
         });
 
         // Restore classes
@@ -135,7 +154,7 @@ export async function generateWallpaper(allLectures, timetableData) {
 
     } catch (err) {
         console.error("Wallpaper generation failed:", err);
-        alert("壁紙の生成に失敗しました。");
+        alert("画像生成に失敗しました: " + err.message);
         document.body.style.cursor = 'default';
     }
 }
