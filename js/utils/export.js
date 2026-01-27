@@ -97,26 +97,29 @@ export async function generateWallpaper(allLectures, timetableData) {
 
         // Capture
         const canvas = await html2canvas(wallpaperExportRoot, {
-            scale: 3, // High quality for wallpaper
+            scale: 2,
             useCORS: true,
+            allowTaint: true,
             backgroundColor: null,
             width: 360,
             height: 640,
         });
 
         const dataUrl = canvas.toDataURL('image/png');
+
+        // Wait for image to load before showing modal
+        exportImage.onload = () => {
+            // Add "Long press to save" message
+            const msg = exportModal.querySelector('p.text-slate-500');
+            if (msg) msg.textContent = "壁紙として保存するには、画像を長押しまたは右クリックしてください。";
+            exportModal.classList.remove('hidden');
+            document.body.style.cursor = 'default';
+        };
         exportImage.src = dataUrl;
-
-        // Add "Long press to save" message
-        const msg = exportModal.querySelector('p.text-slate-500');
-        if (msg) msg.textContent = "壁紙として保存するには、画像を長押しまたは右クリックしてください。";
-
-        exportModal.classList.remove('hidden');
 
     } catch (err) {
         console.error("Wallpaper generation failed:", err);
         alert("壁紙の生成に失敗しました。");
-    } finally {
         document.body.style.cursor = 'default';
     }
 }

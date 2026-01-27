@@ -73,7 +73,11 @@ window.printTimetable = printTimetable;
 window.switchTab = switchTab; // Already exposed in grid.js but good to be explicit
 window.loadMore = loadMore;   // Already exposed in search.js
 window.exportToImage = exportToImage;
-window.generateWallpaper = () => generateWallpaper(allLectures, timetableData);
+
+// Event Listeners
+document.getElementById('wallpaperBtn')?.addEventListener('click', () => {
+    generateWallpaper(allLectures, timetableData);
+});
 
 // --- Initialization ---
 
