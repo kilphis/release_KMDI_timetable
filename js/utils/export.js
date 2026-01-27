@@ -2,29 +2,33 @@ import { elements } from '../ui/elements.js';
 
 export async function exportToImage() {
     const { timetableGrid, exportModal, exportImage } = elements;
-
-    // 1. 取得ターゲットを「テーブル全体を包むカード」に固定する
-    // 親要素の overflow-x-auto を一時的に解除するのが html2canvas のコツです
-    const container = timetableGrid.parentElement.parentElement;
+    const container = timetableGrid.closest('table').parentElement; // overflow-x-auto を持っている親
 
     document.body.style.cursor = 'wait';
 
     try {
-        // html2canvas が存在するかチェック（CDN読み込み待ち対策）
-        if (typeof html2canvas === 'undefined') {
-            throw new Error("html2canvas library not loaded");
-        }
-
+        // html2canvas に「全幅・全高」を明示的に教え込む
         const canvas = await html2canvas(container, {
             scale: 2,
             useCORS: true,
-            allowTaint: true,
             backgroundColor: '#ffffff',
-            // スクロールで見切れるのを防ぐ魔法のプロパティ
+            // ここが重要：スクロールで見切れている分を含めた「全体の幅」を指定
             width: container.scrollWidth,
             height: container.scrollHeight,
             windowWidth: container.scrollWidth,
-            windowHeight: container.scrollHeight
+            windowHeight: container.scrollHeight,
+            x: 0,
+            y: 0,
+            scrollX: 0,
+            scrollY: 0,
+            onclone: (clonedDoc) => {
+                // クローンされたDOMの中で、一時的にスクロール制限を解除する
+                const clonedContainer = clonedDoc.querySelector('.overflow-x-auto');
+                if (clonedContainer) {
+                    clonedContainer.style.overflow = 'visible';
+                    clonedContainer.style.width = 'auto';
+                }
+            }
         });
 
         const dataUrl = canvas.toDataURL('image/png');
@@ -33,7 +37,7 @@ export async function exportToImage() {
 
     } catch (err) {
         console.error("Export failed:", err);
-        alert("画像の生成に失敗しました。少し待ってからやり直してください。");
+        alert("画像の生成に失敗しました。");
     } finally {
         document.body.style.cursor = 'default';
     }
