@@ -7,6 +7,7 @@
     <title>時間割シミュレーター</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -117,6 +118,11 @@
                             title="印刷 / PDF保存">
                             <span>️🍎</span> 保存/印刷
                         </button>
+                        <button onclick="if(window.exportToImage) window.exportToImage()"
+                            class="text-xs flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded transition-colors"
+                            title="画像として保存">
+                            <span>📷</span> 画像保存
+                        </button>
                     </div>
                 </div>
 
@@ -141,6 +147,29 @@
                 <div class="mt-4 p-4 bg-blue-50 text-blue-800 rounded-xl text-sm italic">
                     ※ 選択した講義が重なっている場合は赤く表示されます。
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-slate-800">画像として保存</h2>
+                <button onclick="document.getElementById('exportModal').classList.add('hidden')"
+                    class="text-slate-400 hover:text-slate-600">
+                    ✕
+                </button>
+            </div>
+            <div class="flex justify-center mb-4 bg-slate-100 p-4 rounded-xl">
+                <img id="exportImage" class="max-w-full shadow-lg border border-slate-200" alt="Timetable">
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-slate-500 mb-4">画像を長押しまたは右クリックして保存してください。</p>
+                <button onclick="document.getElementById('exportModal').classList.add('hidden')"
+                    class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg font-bold transition-colors">
+                    閉じる
+                </button>
             </div>
         </div>
     </div>
