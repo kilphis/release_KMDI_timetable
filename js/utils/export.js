@@ -89,10 +89,10 @@ export async function generateWallpaper(allLectures, timetableData) {
                 matches.forEach(m => {
                     const div = document.createElement('div');
                     div.className = `wp-lecture ${matches.length > 1 ? 'wp-conflict' : 'wp-cell-active'}`;
-                    div.style.padding = '4px';
-                    div.style.borderRadius = '4px';
-                    div.style.marginBottom = '2px';
-                    div.innerHTML = `<div class="wp-lecture-title">${m.title}</div>`;
+                    div.innerHTML = `
+                        <div class="wp-lecture-title">${m.title}</div>
+                        <div class="wp-teacher">${m.teacher || ''}</div>
+                    `;
                     td.appendChild(div);
                 });
                 tr.appendChild(td);
